@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# I use Bun as my JavaScript runtime, but ignore it for the project
+bun.lock
