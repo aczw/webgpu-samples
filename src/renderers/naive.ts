@@ -18,6 +18,7 @@ export class NaiveRenderer extends renderer.Renderer {
       label: "scene uniforms bind group layout",
       entries: [
         {
+          // Camera uniforms
           binding: 0,
           visibility: GPUShaderStage.VERTEX,
           buffer: { type: "uniform" },
