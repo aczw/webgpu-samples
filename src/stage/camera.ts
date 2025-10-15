@@ -1,4 +1,5 @@
 import { Mat4, mat4, Vec3, vec3 } from "wgpu-matrix";
+
 import { toRadians } from "../math_util";
 import { device, canvas, fovYDegrees, aspectRatio } from "../renderer";
 
@@ -36,7 +37,7 @@ export class Camera {
 
   constructor() {
     this.uniformsBuffer = device.createBuffer({
-      label: "view projection matrix",
+      label: "[Camera] View projection matrix",
       size: this.uniforms.buffer.byteLength,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });

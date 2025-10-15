@@ -15,7 +15,7 @@ export class NaiveRenderer extends renderer.Renderer {
     super(stage);
 
     this.sceneUniformsBindGroupLayout = renderer.device.createBindGroupLayout({
-      label: "scene uniforms bind group layout",
+      label: "[Naive] Scene uniforms bind group layout",
       entries: [
         {
           // Camera uniforms
@@ -33,7 +33,7 @@ export class NaiveRenderer extends renderer.Renderer {
     });
 
     this.sceneUniformsBindGroup = renderer.device.createBindGroup({
-      label: "scene uniforms bind group",
+      label: "[Naive] Scene uniforms bind group",
       layout: this.sceneUniformsBindGroupLayout,
       entries: [
         {
@@ -56,7 +56,7 @@ export class NaiveRenderer extends renderer.Renderer {
 
     this.pipeline = renderer.device.createRenderPipeline({
       layout: renderer.device.createPipelineLayout({
-        label: "naive pipeline layout",
+        label: "[Naive] Pipeline layout",
         bindGroupLayouts: [
           this.sceneUniformsBindGroupLayout,
           renderer.modelBindGroupLayout,
@@ -70,14 +70,14 @@ export class NaiveRenderer extends renderer.Renderer {
       },
       vertex: {
         module: renderer.device.createShaderModule({
-          label: "naive vert shader",
+          label: "[Naive] Vertex shader",
           code: shaders.naiveVertSrc,
         }),
         buffers: [renderer.vertexBufferLayout],
       },
       fragment: {
         module: renderer.device.createShaderModule({
-          label: "naive frag shader",
+          label: "[Naive] Fragment shader",
           code: shaders.naiveFragSrc,
         }),
         targets: [
@@ -94,7 +94,7 @@ export class NaiveRenderer extends renderer.Renderer {
     const canvasTextureView = renderer.context.getCurrentTexture().createView();
 
     const renderPass = encoder.beginRenderPass({
-      label: "naive render pass",
+      label: "[Naive] Render pass",
       colorAttachments: [
         {
           view: canvasTextureView,
