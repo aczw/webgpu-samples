@@ -24,6 +24,7 @@ struct ClusterSet {
 struct CameraUniforms {
     viewProjection: mat4x4<f32>,
     inverseProjection: mat4x4<f32>,
+    view: mat4x4<f32>,
     nearPlane: f32,
     farPlane: f32
 }
