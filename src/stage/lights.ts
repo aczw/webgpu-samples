@@ -146,6 +146,12 @@ export class Lights {
     );
     console.log(`Dimensions: width ${canvas.width} / height ${canvas.height}`);
 
+    if (constants.maxLightsInCluster > this.numLights) {
+      throw Error(
+        `Max lights in cluster (${constants.maxLightsInCluster}) is greater than total number of lights in the scene (${this.numLights})!`
+      );
+    }
+
     const totalNumClusters = numSlicesX * numSlicesY * numSlicesZ;
     this.clusterSetStorageBuffer = device.createBuffer({
       label: "Cluster set storage buffer",

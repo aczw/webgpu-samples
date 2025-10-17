@@ -113,4 +113,21 @@ fn main(@builtin(global_invocation_id) cluster: vec3<u32>) {
         max(max(nearCorner00, nearCorner01), max(nearCorner10, nearCorner11)),
         max(max(farCorner00, farCorner01), max(farCorner10, farCorner11))
     );
+
+    let index = (cluster.z * numSlices.x * numSlices.y) + (cluster.y * numSlices.x) + cluster.x;
+    var numLights: u32 = 0;
+
+    for (var lightIndex = 0u; lightIndex < lightSet.numLights; lightIndex++) {
+        if (numLights >= ${maxLightsInCluster}) {
+            break;
+        }
+
+        let center: vec3<f32> = lightSet.lights[lightIndex].pos;
+        if (testSphereAabbIsect(center, min, max)) {
+            clusterSet.clusters[index].lights[numLights] = lightIndex;
+            numLights++;
+        }
+    }
+
+    clusterSet.clusters[index].numLights = numLights;
 }
