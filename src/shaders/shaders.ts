@@ -41,6 +41,8 @@ export const constants = {
   // Determines the screen space width and height of a cluster, measured in pixels
   clusterPixelWidth: 128,
   clusterPixelHeight: 128,
+
+  maxLightsInCluster: 256,
 };
 
 // =================================

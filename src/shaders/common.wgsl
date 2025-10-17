@@ -11,6 +11,15 @@ struct LightSet {
 }
 
 // TODO-2: you may want to create a ClusterSet struct similar to LightSet
+struct Cluster {
+    numLights: u32,
+    lights: array<u32, ${maxLightsInCluster}>
+}
+
+struct ClusterSet {
+    numClusters: u32,
+    clusters: array<Cluster>
+}
 
 struct CameraUniforms {
     viewProjection: mat4x4<f32>,

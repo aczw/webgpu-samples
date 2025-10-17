@@ -26,6 +26,7 @@
 @group(0) @binding(1) var<uniform> camera: CameraUniforms;
 @group(0) @binding(2) var<uniform> dimensions: vec2<u32>;
 @group(0) @binding(3) var<uniform> numSlices: vec3<u32>;
+@group(0) @binding(4) var<storage, read_write> clusterSet: ClusterSet;
 
 const pixelWidth: u32 = ${clusterPixelWidth};
 const pixelHeight: u32 = ${clusterPixelHeight};

@@ -40,6 +40,8 @@ export class Lights {
 
   dimensionsUniformBuffer: GPUBuffer;
 
+  clusterSetStorageBuffer: GPUBuffer;
+
   constructor(camera: Camera) {
     this.camera = camera;
 
@@ -144,6 +146,15 @@ export class Lights {
     );
     console.log(`Dimensions: width ${canvas.width} / height ${canvas.height}`);
 
+    const totalNumClusters = numSlicesX * numSlicesY * numSlicesZ;
+    this.clusterSetStorageBuffer = device.createBuffer({
+      label: "Cluster set storage buffer",
+      size: 4 + totalNumClusters * (4 + constants.maxLightsInCluster * 4),
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+    });
+    device.queue.writeBuffer(this.clusterSetStorageBuffer, 0, new Uint32Array([totalNumClusters]));
+    console.log(`[Clustering] Total number of clusters: ${totalNumClusters}`);
+
     this.clusteringComputeBgl = device.createBindGroupLayout({
       label: "Clustering compute bind group layout",
       entries: [
@@ -171,6 +182,12 @@ export class Lights {
           visibility: GPUShaderStage.COMPUTE,
           buffer: { type: "uniform" },
         },
+        {
+          // Cluster set storage buffer
+          binding: 4,
+          visibility: GPUShaderStage.COMPUTE,
+          buffer: { type: "storage" },
+        },
       ],
     });
 
@@ -182,6 +199,7 @@ export class Lights {
         { binding: 1, resource: { buffer: this.camera.uniformsBuffer } },
         { binding: 2, resource: { buffer: this.dimensionsUniformBuffer } },
         { binding: 3, resource: { buffer: this.numSlicesUniformBuffer } },
+        { binding: 4, resource: { buffer: this.clusterSetStorageBuffer } },
       ],
     });
 
