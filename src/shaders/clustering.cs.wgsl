@@ -58,7 +58,7 @@ fn testSphereAabbIsect(center: vec3<f32>, min: vec3<f32>, max: vec3<f32>) -> boo
         if (val > max[dir]) { sum += (val - max[dir]) * (val - max[dir]); }
     }
 
-    return sum <= (${lightRadius} * ${lightRadius});
+    return sum <= (lightRadius * lightRadius);
 }
 
 @compute
