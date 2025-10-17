@@ -4,16 +4,35 @@ import { toRadians } from "../math_util";
 import { device, canvas, fovYDegrees, aspectRatio } from "../renderer";
 
 class CameraUniforms {
-  readonly buffer = new ArrayBuffer(16 * 4);
+  readonly buffer = new ArrayBuffer(3 * 16 * 4 + 2 * 4 + 8); // Additional padding needed
   private readonly floatView = new Float32Array(this.buffer);
 
-  set viewProjMat(mat: Float32Array) {
+  set viewProjection(mat: Float32Array) {
     for (let i = 0; i < 16; ++i) {
       this.floatView[i] = mat[i];
     }
   }
 
   // TODO-2: add extra functions to set values needed for light clustering here
+  set inverseProjection(mat: Float32Array) {
+    for (let i = 16; i < 32; ++i) {
+      this.floatView[i] = mat[i - 16];
+    }
+  }
+
+  set view(mat: Float32Array) {
+    for (let i = 32; i < 48; ++i) {
+      this.floatView[i] = mat[i - 32];
+    }
+  }
+
+  set nearPlane(near: number) {
+    this.floatView[48] = near;
+  }
+
+  set farPlane(far: number) {
+    this.floatView[49] = far;
+  }
 }
 
 export class Camera {
@@ -37,7 +56,7 @@ export class Camera {
 
   constructor() {
     this.uniformsBuffer = device.createBuffer({
-      label: "[Camera] View projection matrix",
+      label: "Camera uniforms buffer",
       size: this.uniforms.buffer.byteLength,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
@@ -48,6 +67,10 @@ export class Camera {
       Camera.nearPlane,
       Camera.farPlane
     );
+
+    this.uniforms.inverseProjection = mat4.inverse(this.projMat);
+    this.uniforms.nearPlane = Camera.nearPlane;
+    this.uniforms.farPlane = Camera.farPlane;
 
     this.rotateCamera(0, 0); // set initial camera vectors
 
@@ -86,17 +109,12 @@ export class Camera {
 
     this.cameraFront = vec3.normalize(front);
     this.cameraRight = vec3.normalize(vec3.cross(this.cameraFront, [0, 1, 0]));
-    this.cameraUp = vec3.normalize(
-      vec3.cross(this.cameraRight, this.cameraFront)
-    );
+    this.cameraUp = vec3.normalize(vec3.cross(this.cameraRight, this.cameraFront));
   }
 
   private onMouseMove(event: MouseEvent) {
     if (document.pointerLockElement === canvas) {
-      this.rotateCamera(
-        event.movementX * this.sensitivity,
-        event.movementY * this.sensitivity
-      );
+      this.rotateCamera(event.movementX * this.sensitivity, event.movementY * this.sensitivity);
     }
   }
 
@@ -141,11 +159,12 @@ export class Camera {
 
     const lookPos = vec3.add(this.cameraPos, vec3.scale(this.cameraFront, 1));
     const viewMat = mat4.lookAt(this.cameraPos, lookPos, [0, 1, 0]);
-
     const viewProjMat = mat4.mul(this.projMat, viewMat);
-    this.uniforms.viewProjMat = viewProjMat;
+
+    this.uniforms.viewProjection = viewProjMat;
 
     // TODO-2: write to extra buffers needed for light clustering here
+    this.uniforms.view = viewMat;
 
     device.queue.writeBuffer(this.uniformsBuffer, 0, this.uniforms.buffer);
   }
