@@ -31,6 +31,12 @@ export const constants = {
   moveLightsWorkgroupSize: 128,
 
   lightRadius: 2,
+
+  clusteringWorkgroupSize: {
+    x: 4,
+    y: 4,
+    z: 4,
+  },
 };
 
 // =================================
@@ -50,9 +56,7 @@ export const naiveFragSrc: string = processShaderRaw(naiveFragRaw);
 
 export const forwardPlusFragSrc: string = processShaderRaw(forwardPlusFragRaw);
 
-export const clusteredDeferredFragSrc: string = processShaderRaw(
-  clusteredDeferredFragRaw
-);
+export const clusteredDeferredFragSrc: string = processShaderRaw(clusteredDeferredFragRaw);
 export const clusteredDeferredFullscreenVertSrc: string = processShaderRaw(
   clusteredDeferredFullscreenVertRaw
 );
@@ -60,7 +64,5 @@ export const clusteredDeferredFullscreenFragSrc: string = processShaderRaw(
   clusteredDeferredFullscreenFragRaw
 );
 
-export const moveLightsComputeSrc: string =
-  processShaderRaw(moveLightsComputeRaw);
-export const clusteringComputeSrc: string =
-  processShaderRaw(clusteringComputeRaw);
+export const moveLightsComputeSrc: string = processShaderRaw(moveLightsComputeRaw);
+export const clusteringComputeSrc: string = processShaderRaw(clusteringComputeRaw);
