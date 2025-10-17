@@ -6,8 +6,7 @@ import { Camera } from "./camera";
 
 // h in [0, 1]
 function hueToRgb(h: number) {
-  let f = (n: number, k = (n + h * 6) % 6) =>
-    1 - Math.max(Math.min(k, 4 - k, 1), 0);
+  let f = (n: number, k = (n + h * 6) % 6) => 1 - Math.max(Math.min(k, 4 - k, 1), 0);
   return vec3.lerp(vec3.create(1, 1, 1), vec3.create(f(5), f(3), f(1)), 0.8);
 }
 
@@ -20,9 +19,7 @@ export class Lights {
 
   static readonly lightIntensity = 0.1;
 
-  lightsArray = new Float32Array(
-    Lights.maxNumLights * Lights.numFloatsPerLight
-  );
+  lightsArray = new Float32Array(Lights.maxNumLights * Lights.numFloatsPerLight);
   lightSetStorageBuffer: GPUBuffer;
 
   timeUniformBuffer: GPUBuffer;
@@ -104,10 +101,7 @@ export class Lights {
   private populateLightsBuffer() {
     for (let lightIdx = 0; lightIdx < Lights.maxNumLights; ++lightIdx) {
       // light pos is set by compute shader so no need to set it here
-      const lightColor = vec3.scale(
-        hueToRgb(Math.random()),
-        Lights.lightIntensity
-      );
+      const lightColor = vec3.scale(hueToRgb(Math.random()), Lights.lightIntensity);
       this.lightsArray.set(lightColor, lightIdx * Lights.numFloatsPerLight + 4);
     }
 
@@ -115,11 +109,7 @@ export class Lights {
   }
 
   updateLightSetUniformNumLights() {
-    device.queue.writeBuffer(
-      this.lightSetStorageBuffer,
-      0,
-      new Uint32Array([this.numLights])
-    );
+    device.queue.writeBuffer(this.lightSetStorageBuffer, 0, new Uint32Array([this.numLights]));
   }
 
   doLightClustering(encoder: GPUCommandEncoder) {
@@ -129,11 +119,7 @@ export class Lights {
 
   // CHECKITOUT: this is where the light movement compute shader is dispatched from the host
   onFrame(time: number) {
-    device.queue.writeBuffer(
-      this.timeUniformBuffer,
-      0,
-      new Float32Array([time])
-    );
+    device.queue.writeBuffer(this.timeUniformBuffer, 0, new Float32Array([time]));
 
     // not using same encoder as render pass so this doesn't interfere with measuring actual rendering performance
     const encoder = device.createCommandEncoder();
@@ -143,9 +129,7 @@ export class Lights {
 
     computePass.setBindGroup(0, this.moveLightsComputeBindGroup);
 
-    const workgroupCount = Math.ceil(
-      this.numLights / shaders.constants.moveLightsWorkgroupSize
-    );
+    const workgroupCount = Math.ceil(this.numLights / shaders.constants.moveLightsWorkgroupSize);
     computePass.dispatchWorkgroups(workgroupCount);
 
     computePass.end();
