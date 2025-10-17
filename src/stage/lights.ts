@@ -1,6 +1,6 @@
 import { vec3 } from "wgpu-matrix";
-import { device } from "../renderer";
 
+import { canvas, device } from "../renderer";
 import * as shaders from "../shaders/shaders";
 import { Camera } from "./camera";
 
@@ -29,6 +29,7 @@ export class Lights {
   moveLightsComputePipeline: GPUComputePipeline;
 
   // TODO-2: add layouts, pipelines, textures, etc. needed for light clustering here
+  dimensionsUniformBuffer: GPUBuffer;
 
   constructor(camera: Camera) {
     this.camera = camera;
@@ -96,6 +97,17 @@ export class Lights {
     });
 
     // TODO-2: initialize layouts, pipelines, textures, etc. needed for light clustering here
+    this.dimensionsUniformBuffer = device.createBuffer({
+      label: "Dimensions uniform buffer",
+      size: 2 * Uint32Array.BYTES_PER_ELEMENT,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+    device.queue.writeBuffer(
+      this.dimensionsUniformBuffer,
+      0,
+      new Uint32Array([canvas.width, canvas.height])
+    );
+    console.log(`Dimensions: width ${canvas.width} / height ${canvas.height}`);
   }
 
   private populateLightsBuffer() {
