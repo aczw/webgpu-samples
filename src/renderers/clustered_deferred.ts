@@ -15,12 +15,43 @@ export class ClusteredDeferredRenderer extends Renderer {
   sceneUniformsBindGroupLayout: GPUBindGroupLayout;
   sceneUniformsBindGroup: GPUBindGroup;
 
+  positionTexture: GPUTexture;
+  normalTexture: GPUTexture;
+  albedoTexture: GPUTexture;
   depthTexture: GPUTexture;
 
   pipeline: GPURenderPipeline;
 
   constructor(stage: Stage) {
     super(stage);
+
+    this.positionTexture = device.createTexture({
+      label: "G-buffer position texture",
+      size: [canvas.width, canvas.height],
+      format: "rgba16float",
+      usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING,
+    });
+
+    this.normalTexture = device.createTexture({
+      label: "G-buffer normal texture",
+      size: [canvas.width, canvas.height],
+      format: "rgba16float",
+      usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING,
+    });
+
+    this.albedoTexture = device.createTexture({
+      label: "G-buffer albedo texture",
+      size: [canvas.width, canvas.height],
+      format: "bgra8unorm",
+      usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING,
+    });
+
+    this.depthTexture = device.createTexture({
+      label: "Depth texture",
+      size: [canvas.width, canvas.height],
+      format: "depth24plus",
+      usage: GPUTextureUsage.RENDER_ATTACHMENT,
+    });
 
     this.sceneUniformsBindGroupLayout = device.createBindGroupLayout({
       label: "Deferred scene uniforms bind group layout",
@@ -68,12 +99,6 @@ export class ClusteredDeferredRenderer extends Renderer {
         { binding: 3, resource: { buffer: this.lights.numSlicesUniformBuffer } },
         { binding: 4, resource: { buffer: this.lights.dimensionsUniformBuffer } },
       ],
-    });
-
-    this.depthTexture = device.createTexture({
-      size: [canvas.width, canvas.height],
-      format: "depth24plus",
-      usage: GPUTextureUsage.RENDER_ATTACHMENT,
     });
 
     this.pipeline = device.createRenderPipeline({
