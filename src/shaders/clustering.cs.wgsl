@@ -49,6 +49,19 @@ fn moveToDepth(point: vec3<f32>, depth: f32) -> vec3<f32> {
     return amount * point;
 }
 
+// Adapted from https://stackoverflow.com/questions/28343716/sphere-intersection-test-of-aabb
+fn testSphereAabbIsect(center: vec3<f32>, min: vec3<f32>, max: vec3<f32>) -> bool {
+    var sum: f32 = 0.0;
+
+    for (var dir = 0; dir < 3; dir++) {
+        let val = center[dir];
+        if (val < min[dir]) { sum += (min[dir] - val) * (min[dir] - val); }
+        if (val > max[dir]) { sum += (val - max[dir]) * (val - max[dir]); }
+    }
+
+    return sum <= (${lightRadius} * ${lightRadius});
+}
+
 @compute
 @workgroup_size(
     ${clusteringWorkgroupSize.x},
