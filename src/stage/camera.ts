@@ -13,7 +13,6 @@ class CameraUniforms {
     }
   }
 
-  // TODO-2: add extra functions to set values needed for light clustering here
   set inverseProjection(mat: Float32Array) {
     for (let i = 16; i < 32; ++i) {
       this.floatView[i] = mat[i - 16];
@@ -162,8 +161,6 @@ export class Camera {
     const viewProjMat = mat4.mul(this.projMat, viewMat);
 
     this.uniforms.viewProjection = viewProjMat;
-
-    // TODO-2: write to extra buffers needed for light clustering here
     this.uniforms.view = viewMat;
 
     device.queue.writeBuffer(this.uniformsBuffer, 0, this.uniforms.buffer);

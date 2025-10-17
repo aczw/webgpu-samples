@@ -22,7 +22,6 @@ export class ForwardPlusRenderer extends Renderer {
   constructor(stage: Stage) {
     super(stage);
 
-    // TODO-2: initialize layouts, pipelines, textures, etc. needed for Forward+ here
     this.sceneUniformsBindGroupLayout = device.createBindGroupLayout({
       label: "F+ scene uniforms bind group layout",
       entries: [
@@ -114,9 +113,6 @@ export class ForwardPlusRenderer extends Renderer {
   }
 
   override draw() {
-    // TODO-2: run the Forward+ rendering pass:
-    // - run the clustering compute shader
-    // - run the main rendering pass, using the computed clusters for efficient lighting
     const encoder = device.createCommandEncoder();
     const canvasTextureView = context.getCurrentTexture().createView();
 
