@@ -1,8 +1,8 @@
 import { vec3 } from "wgpu-matrix";
 
 import { canvas, device } from "../renderer";
-import * as shaders from "../shaders/shaders";
 import { Camera } from "./camera";
+import { constants, moveLightsComputeSrc } from "../shaders/shaders";
 
 // h in [0, 1]
 function hueToRgb(h: number) {
@@ -30,6 +30,7 @@ export class Lights {
 
   // TODO-2: add layouts, pipelines, textures, etc. needed for light clustering here
   dimensionsUniformBuffer: GPUBuffer;
+  numSlicesUniformBuffer: GPUBuffer;
 
   constructor(camera: Camera) {
     this.camera = camera;
@@ -90,7 +91,7 @@ export class Lights {
       compute: {
         module: device.createShaderModule({
           label: "move lights compute shader",
-          code: shaders.moveLightsComputeSrc,
+          code: moveLightsComputeSrc,
         }),
         entryPoint: "main",
       },
@@ -108,6 +109,21 @@ export class Lights {
       new Uint32Array([canvas.width, canvas.height])
     );
     console.log(`Dimensions: width ${canvas.width} / height ${canvas.height}`);
+
+    this.numSlicesUniformBuffer = device.createBuffer({
+      label: "Num slices uniform buffer",
+      size: 3 * Uint32Array.BYTES_PER_ELEMENT,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+    const numSlicesX = Math.ceil(canvas.width / constants.clusterPixelWidth);
+    const numSlicesY = Math.ceil(canvas.height / constants.clusterPixelHeight);
+    const numSlicesZ = 24;
+    device.queue.writeBuffer(
+      this.numSlicesUniformBuffer,
+      0,
+      new Uint32Array([numSlicesX, numSlicesY, numSlicesZ])
+    );
+    console.log(`Number of slices: X ${numSlicesX} / Y ${numSlicesY} / Z ${numSlicesZ}`);
   }
 
   private populateLightsBuffer() {
@@ -141,7 +157,7 @@ export class Lights {
 
     computePass.setBindGroup(0, this.moveLightsComputeBindGroup);
 
-    const workgroupCount = Math.ceil(this.numLights / shaders.constants.moveLightsWorkgroupSize);
+    const workgroupCount = Math.ceil(this.numLights / constants.moveLightsWorkgroupSize);
     computePass.dispatchWorkgroups(workgroupCount);
 
     computePass.end();

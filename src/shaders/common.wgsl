@@ -13,7 +13,7 @@ struct LightSet {
 // TODO-2: you may want to create a ClusterSet struct similar to LightSet
 
 struct CameraUniforms {
-    viewProjection: mat4x4f
+    viewProjection: mat4x4<f32>
 }
 
 // CHECKITOUT: this special attenuation function ensures lights don't affect geometry outside the maximum light radius
