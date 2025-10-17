@@ -13,11 +13,11 @@ function hueToRgb(h: number) {
 export class Lights {
   private camera: Camera;
 
-  numLights = 500;
   static readonly maxNumLights = 5000;
   static readonly numFloatsPerLight = 8; // vec3f is aligned at 16 byte boundaries
-
   static readonly lightIntensity = 0.1;
+
+  numLights = 500;
 
   lightsArray = new Float32Array(Lights.maxNumLights * Lights.numFloatsPerLight);
   lightSetStorageBuffer: GPUBuffer;
@@ -29,6 +29,10 @@ export class Lights {
   moveLightsComputePipeline: GPUComputePipeline;
 
   // TODO-2: add layouts, pipelines, textures, etc. needed for light clustering here
+  //   clusteringComputeBgl: GPUBindGroupLayout;
+  //   clusteringComputeBg: GPUBindGroup;
+  //   clusteringComputePipeline: GPUComputePipeline;
+
   dimensionsUniformBuffer: GPUBuffer;
   numSlicesUniformBuffer: GPUBuffer;
 
@@ -98,6 +102,11 @@ export class Lights {
     });
 
     // TODO-2: initialize layouts, pipelines, textures, etc. needed for light clustering here
+    // this.clusteringComputeBgl = device.createBindGroupLayout({
+    //   label: "Clustering compute bind group layout",
+    //   entries: [],
+    // });
+
     this.dimensionsUniformBuffer = device.createBuffer({
       label: "Dimensions uniform buffer",
       size: 2 * Uint32Array.BYTES_PER_ELEMENT,
