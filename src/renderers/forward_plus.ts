@@ -25,7 +25,7 @@ export class ForwardPlusRenderer extends Renderer {
 
     // TODO-2: initialize layouts, pipelines, textures, etc. needed for Forward+ here
     this.sceneUniformsBindGroupLayout = device.createBindGroupLayout({
-      label: "[F+] Scene uniforms bind group layout",
+      label: "F+ scene uniforms bind group layout",
       entries: [
         {
           // Camera uniforms
@@ -43,7 +43,7 @@ export class ForwardPlusRenderer extends Renderer {
     });
 
     this.sceneUniformsBindGroup = device.createBindGroup({
-      label: "[F+] Scene uniforms bind group",
+      label: "F+ scene uniforms bind group",
       layout: this.sceneUniformsBindGroupLayout,
       entries: [
         {
@@ -65,8 +65,9 @@ export class ForwardPlusRenderer extends Renderer {
     this.depthTextureView = this.depthTexture.createView();
 
     this.pipeline = device.createRenderPipeline({
+      label: "F+ render pipeline",
       layout: device.createPipelineLayout({
-        label: "[F+] Pipeline layout",
+        label: "F+ render pipeline layout",
         bindGroupLayouts: [
           this.sceneUniformsBindGroupLayout,
           modelBindGroupLayout,
@@ -80,14 +81,14 @@ export class ForwardPlusRenderer extends Renderer {
       },
       vertex: {
         module: device.createShaderModule({
-          label: "[F+] Vertex shader, same as naive",
+          label: "F+ vertex shader (same as naive)",
           code: naiveVertSrc,
         }),
         buffers: [vertexBufferLayout],
       },
       fragment: {
         module: device.createShaderModule({
-          label: "[F+] Fragment shader",
+          label: "F+ fragment shader",
           code: forwardPlusFragSrc,
         }),
         targets: [
@@ -109,7 +110,7 @@ export class ForwardPlusRenderer extends Renderer {
     this.lights.doLightClustering(encoder);
 
     const renderPass = encoder.beginRenderPass({
-      label: "[F+] Render pass",
+      label: "F+ render pass",
       colorAttachments: [
         {
           view: canvasTextureView,
