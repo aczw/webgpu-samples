@@ -21,3 +21,18 @@
 //         - Stop adding lights if the maximum number of lights is reached.
 
 //     - Store the number of lights assigned to this cluster.
+
+@group(0) @binding(0) var<storage, read> lightSet: LightSet;
+@group(0) @binding(1) var<uniform> camera: CameraUniforms;
+@group(0) @binding(2) var<uniform> dimensions: vec2<u32>;
+@group(0) @binding(3) var<uniform> numSlices: vec3<u32>;
+
+@compute
+@workgroup_size(
+    ${clusteringWorkgroupSize.x},
+    ${clusteringWorkgroupSize.y},
+    ${clusteringWorkgroupSize.z}
+)
+fn main(@builtin(global_invocation_id) offset : vec3<u32>) {
+
+}

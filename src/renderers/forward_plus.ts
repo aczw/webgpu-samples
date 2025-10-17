@@ -106,6 +106,8 @@ export class ForwardPlusRenderer extends Renderer {
     const encoder = device.createCommandEncoder();
     const canvasTextureView = context.getCurrentTexture().createView();
 
+    this.lights.doLightClustering(encoder);
+
     const renderPass = encoder.beginRenderPass({
       label: "[F+] Render pass",
       colorAttachments: [
