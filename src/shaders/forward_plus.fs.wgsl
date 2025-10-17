@@ -46,16 +46,15 @@ fn main(in: FragmentInput) -> @location(0) vec4f
     let uv: vec2<f32> = (ndc.xy + 1.0) * 0.5;
 
     // Truncate to find cluster indices
-    let clusterX = u32(uv.x * f32(numSlices.x));
-    let clusterY = u32(uv.y * f32(numSlices.y));
+    let clusterX = u32(uv.x * f32(dimensions.x) / f32(${clusterPixelWidth}));
+    let clusterY = u32(uv.y * f32(dimensions.y) / f32(${clusterPixelHeight}));
 
     // Since our depth slices aren't linearly spaced, we have to derive it. And since
     // we did the original z-value calculations in view space, we do the same here
     let viewPos: vec4<f32> = camera.view * vec4<f32>(in.pos, 1.0);
-    let viewZ: f32 = viewPos.z;
     let logFarNearInv: f32 = 1.0 / log(camera.farPlane / camera.nearPlane);
     let clusterZ = u32(
-        (log(viewZ) * f32(numSlices.z) * logFarNearInv) -
+        (log(-viewPos.z) * f32(numSlices.z) * logFarNearInv) -
         (f32(numSlices.z) * log(camera.nearPlane) * logFarNearInv)
     );
 
@@ -70,7 +69,5 @@ fn main(in: FragmentInput) -> @location(0) vec4f
     }
 
     let finalColor = diffuseColor.rgb * lightSum;
-    // let finalColor = vec3<f32>(f32(numLights) / f32(${maxLightsInCluster}));
-    // let finalColor = vec3<f32>(f32(clusterX) / f32(numSlices.x), f32(clusterY) / f32(numSlices.y), f32(clusterZ) / f32(numSlices.z));
     return vec4<f32>(finalColor, 1.0);
 }

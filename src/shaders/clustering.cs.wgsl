@@ -123,7 +123,9 @@ fn main(@builtin(global_invocation_id) cluster: vec3<u32>) {
         }
 
         let center: vec3<f32> = lightSet.lights[lightIndex].pos;
-        if (testSphereAabbIsect(center, min, max)) {
+        let viewCenter: vec4<f32> = camera.view * vec4<f32>(center, 1.0);
+
+        if (testSphereAabbIsect(viewCenter.xyz, min, max)) {
             clusterSet.clusters[index].lights[numLights] = lightIndex;
             numLights++;
         }
