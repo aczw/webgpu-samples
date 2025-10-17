@@ -42,6 +42,13 @@ fn screenToView(point: vec2<f32>) -> vec4<f32> {
     return view;
 }
 
+// While the bounds are now in view space, we picked an arbitrary z-value (-1.0) for the
+// NDC-to-view conversion. We now need to translate this point to the actual z-value we want
+fn moveToDepth(point: vec3<f32>, depth: f32) -> vec3<f32> {
+    let amount = depth / -point.z;
+    return amount * point;
+}
+
 @compute
 @workgroup_size(
     ${clusteringWorkgroupSize.x},
@@ -67,4 +74,29 @@ fn main(@builtin(global_invocation_id) cluster: vec3<u32>) {
     let far = camera.farPlane;
     let clusterNear = near * pow(far / near, f32(cluster.z) / f32(numSlices.z));
     let clusterFar = near * pow(far / near, f32(cluster.z + 1) / f32(numSlices.z));
+
+    // Get each corner of the cluster bound. Z-value can be taken from either one
+    let corner00 = vec3<f32>(minView.xyz);
+    let corner01 = vec3<f32>(minView.x, maxView.y, maxView.z);
+    let corner10 = vec3<f32>(maxView.x, minView.y, minView.z);
+    let corner11 = vec3<f32>(maxView.xyz);
+
+    let nearCorner00 = moveToDepth(corner00, clusterNear);
+    let nearCorner01 = moveToDepth(corner01, clusterNear);
+    let nearCorner10 = moveToDepth(corner10, clusterNear);
+    let nearCorner11 = moveToDepth(corner11, clusterNear);
+    let farCorner00 = moveToDepth(corner00, clusterFar);
+    let farCorner01 = moveToDepth(corner01, clusterFar);
+    let farCorner10 = moveToDepth(corner10, clusterFar);
+    let farCorner11 = moveToDepth(corner11, clusterFar);
+
+    // Calculate bounding box for cluster
+    let min = min(
+        min(min(nearCorner00, nearCorner01), min(nearCorner10, nearCorner11)),
+        min(min(farCorner00, farCorner01), min(farCorner10, farCorner11))
+    );
+    let max = max(
+        max(max(nearCorner00, nearCorner01), max(nearCorner10, nearCorner11)),
+        max(max(farCorner00, farCorner01), max(farCorner10, farCorner11))
+    );
 }
