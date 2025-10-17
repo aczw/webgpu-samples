@@ -16,7 +16,6 @@ export class ForwardPlusRenderer extends Renderer {
   sceneUniformsBindGroup: GPUBindGroup;
 
   depthTexture: GPUTexture;
-  depthTextureView: GPUTextureView;
 
   pipeline: GPURenderPipeline;
 
@@ -30,7 +29,7 @@ export class ForwardPlusRenderer extends Renderer {
         {
           // Camera uniforms
           binding: 0,
-          visibility: GPUShaderStage.VERTEX,
+          visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
           buffer: { type: "uniform" },
         },
         {
@@ -39,6 +38,16 @@ export class ForwardPlusRenderer extends Renderer {
           visibility: GPUShaderStage.FRAGMENT,
           buffer: { type: "read-only-storage" },
         },
+        {
+          binding: 2,
+          visibility: GPUShaderStage.FRAGMENT,
+          buffer: { type: "read-only-storage" },
+        },
+        {
+          binding: 3,
+          visibility: GPUShaderStage.FRAGMENT,
+          buffer: { type: "uniform" },
+        },
       ],
     });
 
@@ -46,14 +55,10 @@ export class ForwardPlusRenderer extends Renderer {
       label: "F+ scene uniforms bind group",
       layout: this.sceneUniformsBindGroupLayout,
       entries: [
-        {
-          binding: 0,
-          resource: { buffer: this.camera.uniformsBuffer },
-        },
-        {
-          binding: 1,
-          resource: { buffer: this.lights.lightSetStorageBuffer },
-        },
+        { binding: 0, resource: { buffer: this.camera.uniformsBuffer } },
+        { binding: 1, resource: { buffer: this.lights.lightSetStorageBuffer } },
+        { binding: 2, resource: { buffer: this.lights.clusterSetStorageBuffer } },
+        { binding: 3, resource: { buffer: this.lights.numSlicesUniformBuffer } },
       ],
     });
 
@@ -62,7 +67,6 @@ export class ForwardPlusRenderer extends Renderer {
       format: "depth24plus",
       usage: GPUTextureUsage.RENDER_ATTACHMENT,
     });
-    this.depthTextureView = this.depthTexture.createView();
 
     this.pipeline = device.createRenderPipeline({
       label: "F+ render pipeline",
@@ -120,7 +124,7 @@ export class ForwardPlusRenderer extends Renderer {
         },
       ],
       depthStencilAttachment: {
-        view: this.depthTextureView,
+        view: this.depthTexture.createView(),
         depthClearValue: 1.0,
         depthLoadOp: "clear",
         depthStoreOp: "store",
