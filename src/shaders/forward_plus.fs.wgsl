@@ -19,6 +19,7 @@
 @group(${bindGroup_scene}) @binding(1) var<storage, read> lightSet: LightSet;
 @group(${bindGroup_scene}) @binding(2) var<storage, read> clusterSet: ClusterSet;
 @group(${bindGroup_scene}) @binding(3) var<uniform> numSlices: vec3<u32>;
+@group(${bindGroup_scene}) @binding(4) var<uniform> dimensions: vec2<u32>;
 
 @group(${bindGroup_material}) @binding(0) var diffuseTex: texture_2d<f32>;
 @group(${bindGroup_material}) @binding(1) var diffuseTexSampler: sampler;
@@ -41,8 +42,8 @@ fn main(in: FragmentInput) -> @location(0) vec4f
     }
 
     // Truncate to find cluster indices
-    let clusterX = u32(in.pixel.x / ${clusterPixelWidth});
-    let clusterY = u32(in.pixel.y / ${clusterPixelHeight});
+    let clusterX = u32(in.pixel.x / f32(${clusterPixelWidth}));
+    let clusterY = u32(in.pixel.y / f32(${clusterPixelHeight}));
 
     // Getting the cluster Z index is more involved. Since our depth slices aren't linearly
     // spaced, we have to calculate it. And since we did the original z-value calculations
@@ -56,13 +57,16 @@ fn main(in: FragmentInput) -> @location(0) vec4f
     );
 
     let index = (clusterZ * numSlices.x * numSlices.y) + (clusterY * numSlices.x) + clusterX;
+    var numLights = clusterSet.clusters[index].numLights;
+    var lightSum = vec3<f32>();
 
-    var totalLightContrib = vec3f(0, 0, 0);
-    for (var lightIdx = 0u; lightIdx < lightSet.numLights; lightIdx++) {
-        let light = lightSet.lights[lightIdx];
-        totalLightContrib += calculateLightContrib(light, in.pos, normalize(in.nor));
+    for (var clusterLightIndex = 0u; clusterLightIndex < numLights; clusterLightIndex++) {
+        let lightIndex = clusterSet.clusters[index].lights[clusterLightIndex];
+        let light = lightSet.lights[lightIndex];
+        lightSum += calculateLightContrib(light, in.pos, normalize(in.nor));
     }
 
-    var finalColor = diffuseColor.rgb * totalLightContrib;
-    return vec4(finalColor, 1);
+    let finalColor = diffuseColor.rgb * lightSum;
+    // let finalColor = vec3<f32>(f32(numLights) / f32(${maxLightsInCluster}));
+    return vec4<f32>(finalColor, 1.0);
 }
