@@ -13,8 +13,8 @@ import {
   constants,
   clusteredDeferredFullscreenFragSrc,
   clusteredDeferredFragSrc,
+  clusteredDeferredFullscreenVertSrc,
 } from "../shaders/shaders";
-import { Camera } from "../stage/camera";
 import { Stage } from "../stage/stage";
 
 export class ClusteredDeferredRenderer extends Renderer {
@@ -118,89 +118,103 @@ export class ClusteredDeferredRenderer extends Renderer {
       },
     });
 
-    // this.renderBgl = device.createBindGroupLayout({
-    //   label: "Deferred render bind group layout",
-    //   entries: [
-    //     {
-    //       // Camera uniforms
-    //       binding: 0,
-    //       visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-    //       buffer: { type: "uniform" },
-    //     },
-    //     {
-    //       // Light set
-    //       binding: 1,
-    //       visibility: GPUShaderStage.FRAGMENT,
-    //       buffer: { type: "read-only-storage" },
-    //     },
-    //     {
-    //       // Cluster set storage buffer
-    //       binding: 2,
-    //       visibility: GPUShaderStage.FRAGMENT,
-    //       buffer: { type: "read-only-storage" },
-    //     },
-    //     {
-    //       // Num slices uniform buffer
-    //       binding: 3,
-    //       visibility: GPUShaderStage.FRAGMENT,
-    //       buffer: { type: "uniform" },
-    //     },
-    //     {
-    //       // Dimensions uniform buffer
-    //       binding: 4,
-    //       visibility: GPUShaderStage.FRAGMENT,
-    //       buffer: { type: "uniform" },
-    //     },
-    //   ],
-    // });
+    this.renderBgl = device.createBindGroupLayout({
+      label: "Deferred render bind group layout",
+      entries: [
+        {
+          // Camera uniforms
+          binding: 0,
+          visibility: GPUShaderStage.FRAGMENT,
+          buffer: { type: "uniform" },
+        },
+        {
+          // Light set
+          binding: 1,
+          visibility: GPUShaderStage.FRAGMENT,
+          buffer: { type: "read-only-storage" },
+        },
+        {
+          // Cluster set storage buffer
+          binding: 2,
+          visibility: GPUShaderStage.FRAGMENT,
+          buffer: { type: "read-only-storage" },
+        },
+        {
+          // Num slices uniform buffer
+          binding: 3,
+          visibility: GPUShaderStage.FRAGMENT,
+          buffer: { type: "uniform" },
+        },
+        {
+          // Dimensions uniform buffer
+          binding: 4,
+          visibility: GPUShaderStage.FRAGMENT,
+          buffer: { type: "uniform" },
+        },
+        {
+          // Position texture view
+          binding: 5,
+          visibility: GPUShaderStage.FRAGMENT,
+          texture: { sampleType: "float" },
+        },
+        {
+          // Normal texture view
+          binding: 6,
+          visibility: GPUShaderStage.FRAGMENT,
+          texture: { sampleType: "float" },
+        },
+        {
+          // Albedo texture view
+          binding: 7,
+          visibility: GPUShaderStage.FRAGMENT,
+          texture: { sampleType: "float" },
+        },
+      ],
+    });
 
-    // this.renderBg = device.createBindGroup({
-    //   label: "Deferred render bind group",
-    //   layout: this.renderBgl,
-    //   entries: [
-    //     { binding: 0, resource: { buffer: this.camera.uniformsBuffer } },
-    //     { binding: 1, resource: { buffer: this.lights.lightSetStorageBuffer } },
-    //     { binding: 2, resource: { buffer: this.lights.clusterSetStorageBuffer } },
-    //     { binding: 3, resource: { buffer: this.lights.numSlicesUniformBuffer } },
-    //     { binding: 4, resource: { buffer: this.lights.dimensionsUniformBuffer } },
-    //   ],
-    // });
+    this.renderBg = device.createBindGroup({
+      label: "Deferred render bind group",
+      layout: this.renderBgl,
+      entries: [
+        { binding: 0, resource: { buffer: this.camera.uniformsBuffer } },
+        { binding: 1, resource: { buffer: this.lights.lightSetStorageBuffer } },
+        { binding: 2, resource: { buffer: this.lights.clusterSetStorageBuffer } },
+        { binding: 3, resource: { buffer: this.lights.numSlicesUniformBuffer } },
+        { binding: 4, resource: { buffer: this.lights.dimensionsUniformBuffer } },
+        { binding: 5, resource: this.positionTextureView },
+        { binding: 6, resource: this.normalTextureView },
+        { binding: 7, resource: this.albedoTextureView },
+      ],
+    });
 
-    // this.renderPipeline = device.createRenderPipeline({
-    //   label: "Deferred render pipeline",
-    //   layout: device.createPipelineLayout({
-    //     label: "Deferred render pipeline layout",
-    //     bindGroupLayouts: [this.gBufferBgl, modelBindGroupLayout, materialBindGroupLayout],
-    //   }),
-    //   depthStencil: {
-    //     depthWriteEnabled: true,
-    //     depthCompare: "less",
-    //     format: "depth24plus",
-    //   },
-    //   vertex: {
-    //     module: device.createShaderModule({
-    //       label: "Deferred vertex shader (same as naive)",
-    //       code: naiveVertSrc,
-    //     }),
-    //     buffers: [vertexBufferLayout],
-    //   },
-    //   fragment: {
-    //     module: device.createShaderModule({
-    //       label: "Deferred fullscreen fragment shader",
-    //       code: clusteredDeferredFullscreenFragSrc,
-    //     }),
-    //     targets: [
-    //       {
-    //         format: canvasFormat,
-    //       },
-    //     ],
-    //   },
-    // });
+    this.renderPipeline = device.createRenderPipeline({
+      label: "Deferred render pipeline",
+      layout: device.createPipelineLayout({
+        label: "Deferred render pipeline layout",
+        bindGroupLayouts: [this.renderBgl],
+      }),
+      vertex: {
+        module: device.createShaderModule({
+          label: "Deferred render fullscreen vertex shader (quad)",
+          code: clusteredDeferredFullscreenVertSrc,
+        }),
+      },
+      fragment: {
+        module: device.createShaderModule({
+          label: "Deferred render fullscreen fragment shader",
+          code: clusteredDeferredFullscreenFragSrc,
+        }),
+        targets: [
+          {
+            format: canvasFormat,
+          },
+        ],
+      },
+    });
   }
 
   override draw() {
     const encoder = device.createCommandEncoder();
-    const canvasTextureView = context.getCurrentTexture().createView();
 
     this.lights.doLightClustering(encoder);
 
@@ -253,6 +267,26 @@ export class ClusteredDeferredRenderer extends Renderer {
       );
 
       gBufferPass.end();
+    }
+
+    {
+      const renderPass = encoder.beginRenderPass({
+        label: "Deferred render pass",
+        colorAttachments: [
+          {
+            view: context.getCurrentTexture().createView(),
+            clearValue: [0.0, 0.0, 0.0, 0.0],
+            loadOp: "clear",
+            storeOp: "store",
+          },
+        ],
+      });
+
+      renderPass.setPipeline(this.renderPipeline);
+      renderPass.setBindGroup(0, this.renderBg);
+      renderPass.draw(6);
+
+      renderPass.end();
     }
 
     device.queue.submit([encoder.finish()]);

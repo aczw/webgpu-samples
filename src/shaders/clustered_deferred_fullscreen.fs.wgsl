@@ -1,32 +1,24 @@
 // Similar to the Forward+ fragment shader, but with vertex information coming from the G-buffer instead.
 
-@group(${bindGroup_scene}) @binding(0) var<uniform> camera: CameraUniforms;
-@group(${bindGroup_scene}) @binding(1) var<storage, read> lightSet: LightSet;
-@group(${bindGroup_scene}) @binding(2) var<storage, read> clusterSet: ClusterSet;
-@group(${bindGroup_scene}) @binding(3) var<uniform> numSlices: vec3<u32>;
-@group(${bindGroup_scene}) @binding(4) var<uniform> dimensions: vec2<u32>;
+@group(0) @binding(0) var<uniform> camera: CameraUniforms;
+@group(0) @binding(1) var<storage, read> lightSet: LightSet;
+@group(0) @binding(2) var<storage, read> clusterSet: ClusterSet;
+@group(0) @binding(3) var<uniform> numSlices: vec3<u32>;
+@group(0) @binding(4) var<uniform> dimensions: vec2<u32>;
 
-@group(${bindGroup_material}) @binding(0) var diffuseTex: texture_2d<f32>;
-@group(${bindGroup_material}) @binding(1) var diffuseTexSampler: sampler;
-
-struct FragmentInput
-{
-    @builtin(position) pixel: vec4<f32>,
-    @location(0) pos: vec3f,
-    @location(1) nor: vec3f,
-    @location(2) uv: vec2f
-}
+@group(0) @binding(5) var posTex: texture_2d<f32>;
+@group(0) @binding(6) var norTex: texture_2d<f32>;
+@group(0) @binding(7) var albedoTex: texture_2d<f32>;
 
 @fragment
-fn main(in: FragmentInput) -> @location(0) vec4f
-{
-    let diffuseColor = textureSample(diffuseTex, diffuseTexSampler, in.uv);
+fn main(@builtin(position) position: vec4<f32>) -> @location(0) vec4f {
+    let pixel = vec2<i32>(floor(position.xy));
     
-    if (diffuseColor.a < 0.5) {
-        discard;
-    }
+    let worldPos = vec4<f32>(textureLoad(posTex, pixel, 0).xyz, 1.0);
+    let normal: vec3<f32> = textureLoad(norTex, pixel, 0).xyz;
+    let albedo: vec4<f32> = textureLoad(albedoTex, pixel, 0);
 
-    let clip: vec4<f32> = camera.viewProjection * vec4<f32>(in.pos, 1.0);
+    let clip: vec4<f32> = camera.viewProjection * worldPos;
     let ndc: vec3<f32> = clip.xyz / clip.w;
     let uv: vec2<f32> = (ndc.xy + 1.0) * 0.5;
 
@@ -36,7 +28,7 @@ fn main(in: FragmentInput) -> @location(0) vec4f
 
     // Since our depth slices aren't linearly spaced, we have to derive it. And since
     // we did the original z-value calculations in view space, we do the same here
-    let viewPos: vec4<f32> = camera.view * vec4<f32>(in.pos, 1.0);
+    let viewPos: vec4<f32> = camera.view * worldPos;
     let logFarNearInv: f32 = 1.0 / log(camera.farPlane / camera.nearPlane);
     let clusterZ = u32(
         (log(-viewPos.z) * f32(numSlices.z) * logFarNearInv) -
@@ -50,9 +42,8 @@ fn main(in: FragmentInput) -> @location(0) vec4f
     for (var clusterLightIndex = 0u; clusterLightIndex < numLights; clusterLightIndex++) {
         let lightIndex = clusterSet.clusters[index].lights[clusterLightIndex];
         let light = lightSet.lights[lightIndex];
-        lightSum += calculateLightContrib(light, in.pos, normalize(in.nor));
+        lightSum += calculateLightContrib(light, worldPos.xyz, normalize(normal));
     }
 
-    let finalColor = diffuseColor.rgb * lightSum;
-    return vec4<f32>(finalColor, 1.0);
+    return albedo * vec4<f32>(lightSum, 1.0);
 }
