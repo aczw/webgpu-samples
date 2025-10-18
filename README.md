@@ -1,10 +1,15 @@
-# WebGL Forward+ and Clustered Deferred Shading
+**University of Pennsylvania, CIS 5650: GPU Programming and Architecture, Project 4**
 
-**University of Pennsylvania, CIS 565: GPU Programming and Architecture, Project 4**
+- Charles Wang
+  - [LinkedIn](https://linkedin.com/in/zwcharl)
+  - [Personal website](https://charleszw.com)
+- Tested on:
+  - Windows 11 Pro (26100.4946)
+  - Ryzen 5 7600X @ 4.7Ghz
+  - 32 GB RAM
+  - RTX 5060 Ti 16 GB (Studio Driver 581.29)
 
-- (TODO) YOUR NAME HERE
-- Tested on: (TODO) **Google Chrome 222.2** on
-  Windows 22, i7-2222 @ 2.22GHz 22GB, GTX 222 222MB (Moore 2222 Lab)
+# WebGPU Forward+ and Clustered Deferred Shading
 
 ### Live Demo
 
