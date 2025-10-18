@@ -13,11 +13,11 @@
 
 ### Live Demo
 
-[![](img/thumb.png)](http://TODO.github.io/Project4-WebGPU-Forward-Plus-and-Clustered-Deferred)
+[Live demo link here!](https://aczw.github.io/webgpu-forward-plus-and-clustered-deferred)
 
-### Demo Video/GIF
+### Demo Video
 
-[![](img/video.mp4)](TODO)
+https://github.com/user-attachments/assets/54f36dd2-abfc-4259-a88c-6be94e762a65
 
 ### (TODO: Your README)
 
