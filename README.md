@@ -62,6 +62,8 @@ Performing this render pass inherently runs depth tests, meaning we only calcula
 
 To keep things consistent, I maintained the same canvas resolution of 1920×1200.
 
+![](images/graph.png)
+
 ## Credits
 
 - [Vite](https://vitejs.dev/)
