@@ -13,6 +13,8 @@
 
 ![](images/sponza_bright.png)
 
+_Sponza scene, 3024×1704 resolution, 5000 lights_
+
 ## Demo
 
 [Live demo link here!](https://aczw.github.io/webgpu-forward-plus-and-clustered-deferred) Here's a recorded video taken on my M4 MacBook Pro.
