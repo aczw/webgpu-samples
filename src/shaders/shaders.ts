@@ -40,7 +40,7 @@ export const constants = {
   clusterPixelWidth: 128,
   clusterPixelHeight: 128,
 
-  maxLightsInCluster: 256,
+  maxLightsInCluster: 1024,
 };
 
 // =================================
