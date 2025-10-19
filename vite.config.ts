@@ -1,8 +1,9 @@
 import { defineConfig } from "vite";
 
-export default defineConfig({
+const config = defineConfig({
   build: {
     target: "esnext",
   },
-  base: process.env.GITHUB_ACTIONS_BASE || undefined,
 });
+
+export default config;

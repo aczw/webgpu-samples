@@ -1,4 +1,4 @@
-import { Mat4, mat4, Vec3, vec3 } from "wgpu-matrix";
+import { type Mat4, mat4, type Vec3, vec3 } from "wgpu-matrix";
 
 import { toRadians } from "../math_util";
 import { device, canvas, fovYDegrees, aspectRatio } from "../renderer";
