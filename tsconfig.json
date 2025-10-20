@@ -20,7 +20,13 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@fpcd/*": ["./src/forward-plus-clustered-deferred/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "main.ts"]
 }

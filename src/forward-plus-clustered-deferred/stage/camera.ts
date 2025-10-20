@@ -1,7 +1,10 @@
 import { type Mat4, mat4, type Vec3, vec3 } from "wgpu-matrix";
 
-import { toRadians } from "../math_util";
 import { device, canvas, fovYDegrees, aspectRatio } from "../renderer";
+
+function toRadians(degrees: number) {
+  return (degrees * Math.PI) / 180;
+}
 
 class CameraUniforms {
   readonly buffer = new ArrayBuffer(3 * 16 * 4 + 2 * 4 + 8); // Additional padding needed

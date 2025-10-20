@@ -3,8 +3,8 @@ import { GUI } from "dat.gui";
 
 import { initWebGPU, Renderer } from "./renderer";
 import { NaiveRenderer } from "./renderers/naive";
-import { ForwardPlusRenderer } from "./renderers/forward_plus";
-import { ClusteredDeferredRenderer } from "./renderers/clustered_deferred";
+import { ForwardPlusRenderer } from "./renderers/forward-plus";
+import { ClusteredDeferredRenderer } from "./renderers/clustered-deferred";
 
 import { setupLoaders, Scene } from "./stage/scene";
 import { Lights } from "./stage/lights";
@@ -18,7 +18,7 @@ let scene = new Scene();
 await scene.loadGltf("/scenes/sponza/Sponza.gltf");
 
 const camera = new Camera();
-const lights = new Lights(camera);
+const lights = new Lights(camera, 500);
 
 const stats = new Stats();
 stats.showPanel(0);
@@ -36,7 +36,13 @@ gui
 
 const stage = new Stage(scene, lights, camera, stats);
 
-var renderer: Renderer | undefined;
+const renderModes = {
+  naive: "naive",
+  forwardPlus: "forward+",
+  clusteredDeferred: "clustered deferred",
+};
+
+let renderer: Renderer | undefined;
 
 function setRenderer(mode: string) {
   renderer?.stop();
@@ -54,12 +60,7 @@ function setRenderer(mode: string) {
   }
 }
 
-const renderModes = {
-  naive: "naive",
-  forwardPlus: "forward+",
-  clusteredDeferred: "clustered deferred",
-};
-let renderModeController = gui.add({ mode: renderModes.clusteredDeferred }, "mode", renderModes);
+const renderModeController = gui.add({ mode: renderModes.clusteredDeferred }, "mode", renderModes);
 renderModeController.onChange(setRenderer);
 
 setRenderer(renderModeController.getValue());

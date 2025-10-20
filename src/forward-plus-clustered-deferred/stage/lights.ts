@@ -17,7 +17,7 @@ export class Lights {
   static readonly numFloatsPerLight = 8; // vec3f is aligned at 16 byte boundaries
   static readonly lightIntensity = 0.1;
 
-  numLights = 500;
+  numLights: number;
 
   lightsArray = new Float32Array(Lights.maxNumLights * Lights.numFloatsPerLight);
   lightSetStorageBuffer: GPUBuffer;
@@ -41,8 +41,9 @@ export class Lights {
 
   clusterSetStorageBuffer: GPUBuffer;
 
-  constructor(camera: Camera) {
+  constructor(camera: Camera, defaultNumLights: number) {
     this.camera = camera;
+    this.numLights = defaultNumLights;
 
     this.lightSetStorageBuffer = device.createBuffer({
       label: "Light set storage buffer",

@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+console.log("[INFO] __dirname:", __dirname);
+
 const config = defineConfig({
   build: {
     target: "esnext",
@@ -16,6 +18,12 @@ const config = defineConfig({
           "forward-plus-clustered-deferred/index.html"
         ),
       },
+    },
+  },
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "./src"),
+      "@fpcd": resolve(__dirname, "./src/forward-plus-clustered-deferred"),
     },
   },
 });
