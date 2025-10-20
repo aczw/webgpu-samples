@@ -13,14 +13,18 @@
     "@types/seedrandom": "^3.0.8",
     "@types/stats.js": "^0.17.3",
     "@webgpu/types": "^0.1.44",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.7.1",
     "typescript": "^5.2.2",
     "vite": "^7.1.9"
   },
   "dependencies": {
     "@loaders.gl/gltf": "^4.2.2",
     "@loaders.gl/images": "^4.2.3",
+    "@tailwindcss/vite": "^4.1.15",
     "dat.gui": "^0.7.9",
     "stats.js": "^0.17.0",
+    "tailwindcss": "^4.1.15",
     "wgpu-matrix": "^3.0.2"
   }
 }
