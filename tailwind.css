@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 @layer base {
+  * {
+    text-wrap: pretty;
+  }
+
   html,
   body,
   main {
