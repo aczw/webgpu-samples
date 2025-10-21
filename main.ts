@@ -4,13 +4,12 @@ import { vec3 } from "wgpu-matrix";
 import { initWebGPU } from "@fpcd/renderer";
 import { ClusteredDeferredRenderer } from "@fpcd/renderers/clustered-deferred";
 
-import { setupLoaders, Scene } from "@fpcd/stage/scene";
+import { Scene } from "@fpcd/stage/scene";
 import { Lights } from "@fpcd/stage/lights";
 import { Camera } from "@fpcd/stage/camera";
 import { Stage } from "@fpcd/stage/stage";
 
 await initWebGPU();
-setupLoaders();
 
 const scene = new Scene();
 await scene.loadGltf("/scenes/sponza/Sponza.gltf");
@@ -36,5 +35,14 @@ renderer.setOnFrame(async function (time, deltaTime) {
   this.draw();
   // this.stats.end();
 });
+
+const canvas = document.getElementById("main-canvas") as HTMLCanvasElement;
+const id = setInterval(() => {
+  canvas.style.opacity = Math.min(1, Number(canvas.style.opacity) + 0.1).toString();
+
+  if (canvas.style.opacity === "1.0") {
+    clearInterval(id);
+  }
+}, 100);
 
 renderer.start();

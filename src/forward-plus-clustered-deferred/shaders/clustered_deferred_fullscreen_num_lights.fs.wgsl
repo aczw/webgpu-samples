@@ -28,10 +28,8 @@ fn main(@builtin(position) position: vec4<f32>) -> @location(0) vec4f {
     );
 
     let index = (clusterZ * numSlices.x * numSlices.y) + (clusterY * numSlices.x) + clusterX;
-    var numLights = clusterSet.clusters[index].numLights;
-
-    var val = 1.0 - f32(numLights) / f32(${maxLightsInCluster});
-    val = val * val * val * val;
+    let ratio = 1.0 - f32(clusterSet.clusters[index].numLights) / f32(${maxLightsInCluster});
+    let val = ratio * ratio * ratio * ratio;
 
     return vec4<f32>(val, val, val, 1.0);
 }

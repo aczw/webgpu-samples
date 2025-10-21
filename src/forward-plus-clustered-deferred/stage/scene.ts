@@ -1,11 +1,4 @@
-/*
-Note that this glTF loader assumes a lot of things are always defined (textures, samplers, vertex/index info, etc.),
-so you may run into issues loading files outside of the Sponza scene.
-
-In particular, it is known to not work if there is a mesh with no material.
-*/
-
-import { registerLoaders, load } from "@loaders.gl/core";
+import { load } from "@loaders.gl/core";
 import {
   GLTFLoader,
   type GLTFWithBuffers,
@@ -16,11 +9,8 @@ import {
 } from "@loaders.gl/gltf";
 import { ImageLoader } from "@loaders.gl/images";
 import { mat4 } from "wgpu-matrix";
-import { device, materialBindGroupLayout, modelBindGroupLayout } from "../renderer";
 
-export function setupLoaders() {
-  registerLoaders([GLTFLoader, ImageLoader]);
-}
+import { device, materialBindGroupLayout, modelBindGroupLayout } from "../renderer";
 
 function getFloatArray(gltfWithBuffers: GLTFWithBuffers, attribute: number) {
   const gltf = gltfWithBuffers.json;
@@ -94,19 +84,19 @@ export class Primitive {
     switch (indicesDataType) {
       case 0x1403: // UNSIGNED_SHORT
         indicesArray = Uint32Array.from(
-          new Uint16Array(indicesBuffer.arrayBuffer, indicesByteOffset, indicesAccessor.count)
+          new Uint16Array(indicesBuffer.arrayBuffer, indicesByteOffset, indicesAccessor.count),
         );
         break;
       case 0x1405: // UNSIGNED_INT (untested)
         indicesArray = new Uint32Array(
           indicesBuffer.arrayBuffer,
           indicesByteOffset,
-          indicesAccessor.count
+          indicesAccessor.count,
         );
         break;
       default:
         throw new Error(
-          `unsupported index buffer element component type: 0x${indicesDataType.toString(16)}`
+          `unsupported index buffer element component type: 0x${indicesDataType.toString(16)}`,
         );
     }
 
@@ -153,7 +143,7 @@ export class Mesh {
   constructor(gltfMesh: GLTFMesh, gltfWithBuffers: GLTFWithBuffers, sceneMaterials: Material[]) {
     gltfMesh.primitives.forEach((gltfPrim: GLTFMeshPrimitive) => {
       this.primitives.push(
-        new Primitive(gltfPrim, gltfWithBuffers, sceneMaterials[gltfPrim.material!])
+        new Primitive(gltfPrim, gltfWithBuffers, sceneMaterials[gltfPrim.material!]),
       );
     });
 
@@ -232,7 +222,7 @@ function createTexture(imageBitmap: ImageBitmap): GPUTexture {
   device.queue.copyExternalImageToTexture(
     { source: imageBitmap },
     { texture: texture },
-    { width: imageBitmap.width, height: imageBitmap.height }
+    { width: imageBitmap.width, height: imageBitmap.height },
   );
 
   return texture;
@@ -305,9 +295,17 @@ export class Scene {
     this.root.setName("root");
   }
 
+  /**
+   * Note that this glTF loader assumes a lot of things are always defined (textures, samplers,
+   * vertex/index info, etc.), so you may run into issues loading files outside of the Sponza scene.
+   *
+   * In particular, it is known to not work if there is a mesh with no material.
+   */
   async loadGltf(filePath: string) {
-    const gltfWithBuffers = (await load(filePath)) as GLTFWithBuffers;
+    const gltfWithBuffers = (await load(filePath, [GLTFLoader, ImageLoader])) as GLTFWithBuffers;
     const gltf = gltfWithBuffers.json;
+
+    console.log(`[Info] Loaded ${filePath}!`);
 
     let sceneTextures: Texture[] = [];
     {
@@ -323,7 +321,7 @@ export class Scene {
 
       for (let gltfTexture of gltf.textures!) {
         sceneTextures.push(
-          new Texture(sceneImages[gltfTexture.source!], sceneSamplers[gltfTexture.sampler!])
+          new Texture(sceneImages[gltfTexture.source!], sceneSamplers[gltfTexture.sampler!]),
         );
       }
     }
@@ -389,7 +387,7 @@ export class Scene {
   iterate(
     nodeFunction: (node: Node) => void,
     materialFunction: (material: Material) => void,
-    primFunction: (primitive: Primitive) => void
+    primFunction: (primitive: Primitive) => void,
   ) {
     let nodes = [this.root];
 

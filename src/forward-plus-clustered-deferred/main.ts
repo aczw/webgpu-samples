@@ -7,13 +7,12 @@ import { NaiveRenderer } from "./renderers/naive";
 import { ForwardPlusRenderer } from "./renderers/forward-plus";
 import { ClusteredDeferredRenderer } from "./renderers/clustered-deferred";
 
-import { setupLoaders, Scene } from "./stage/scene";
+import { Scene } from "./stage/scene";
 import { Lights } from "./stage/lights";
 import { Camera } from "./stage/camera";
 import { Stage } from "./stage/stage";
 
 await initWebGPU();
-setupLoaders();
 
 let scene = new Scene();
 await scene.loadGltf("/scenes/sponza/Sponza.gltf");
