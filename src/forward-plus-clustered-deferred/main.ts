@@ -1,5 +1,6 @@
 import Stats from "stats.js";
 import { GUI } from "dat.gui";
+import { vec3 } from "wgpu-matrix";
 
 import { initWebGPU, Renderer } from "./renderer";
 import { NaiveRenderer } from "./renderers/naive";
@@ -17,7 +18,7 @@ setupLoaders();
 let scene = new Scene();
 await scene.loadGltf("/scenes/sponza/Sponza.gltf");
 
-const camera = new Camera({ enableFlight: true });
+const camera = new Camera({ enableFlight: true, position: vec3.create(-7, 2, 0) });
 const lights = new Lights({ camera, numLights: 1000 });
 
 const stats = new Stats();

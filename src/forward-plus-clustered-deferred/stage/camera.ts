@@ -39,6 +39,7 @@ class CameraUniforms {
 
 type CameraConstructorOptions = {
   enableFlight: boolean;
+  position: Vec3;
 };
 
 export class Camera {
@@ -46,7 +47,7 @@ export class Camera {
   uniformsBuffer: GPUBuffer;
 
   projMat: Mat4 = mat4.create();
-  cameraPos: Vec3 = vec3.create(-7, 2, 0);
+  cameraPos: Vec3;
   cameraFront: Vec3 = vec3.create(0, 0, -1);
   cameraUp: Vec3 = vec3.create(0, 1, 0);
   cameraRight: Vec3 = vec3.create(1, 0, 0);
@@ -58,9 +59,13 @@ export class Camera {
   static readonly nearPlane = 0.1;
   static readonly farPlane = 1000;
 
+  enableFlight: boolean;
   keys: { [key: string]: boolean } = {};
 
-  constructor({ enableFlight }: CameraConstructorOptions) {
+  constructor({ enableFlight, position }: CameraConstructorOptions) {
+    this.enableFlight = enableFlight;
+    this.cameraPos = position;
+
     this.uniformsBuffer = device.createBuffer({
       label: "Camera uniforms buffer",
       size: this.uniforms.buffer.byteLength,
@@ -80,7 +85,7 @@ export class Camera {
 
     this.rotateCamera(0, 0); // set initial camera vectors
 
-    if (enableFlight) {
+    if (this.enableFlight) {
       console.log("[Info] Camera flight enabled");
 
       window.addEventListener("keydown", (event) => this.onKeyEvent(event, true));
@@ -101,7 +106,7 @@ export class Camera {
     }
   }
 
-  private rotateCamera(dx: number, dy: number) {
+  rotateCamera(dx: number, dy: number) {
     this.yaw += dx;
     this.pitch -= dy;
 
@@ -165,7 +170,9 @@ export class Camera {
   }
 
   onFrame(deltaTime: number) {
-    this.processInput(deltaTime);
+    if (this.enableFlight) {
+      this.processInput(deltaTime);
+    }
 
     const lookPos = vec3.add(this.cameraPos, vec3.scale(this.cameraFront, 1));
     const viewMat = mat4.lookAt(this.cameraPos, lookPos, [0, 1, 0]);

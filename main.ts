@@ -1,4 +1,5 @@
 import Stats from "stats.js";
+import { vec3 } from "wgpu-matrix";
 
 import { initWebGPU } from "@fpcd/renderer";
 import { ClusteredDeferredRenderer } from "@fpcd/renderers/clustered-deferred";
@@ -14,7 +15,7 @@ setupLoaders();
 const scene = new Scene();
 await scene.loadGltf("/scenes/sponza/Sponza.gltf");
 
-const camera = new Camera({ enableFlight: false });
+const camera = new Camera({ enableFlight: false, position: vec3.create(0, 2, 0) });
 const lights = new Lights({ camera, numLights: 700 });
 
 const stats = new Stats();
@@ -25,6 +26,7 @@ stats.showPanel(0);
 const renderer = new ClusteredDeferredRenderer(new Stage(scene, lights, camera, stats));
 
 renderer.setOnFrame(async function (time, deltaTime) {
+  this.camera.rotateCamera(deltaTime / 50, 0);
   this.camera.onFrame(deltaTime);
   this.lights.onFrame(time);
   // this.stats.begin();

@@ -8,7 +8,7 @@
     height: 100%;
   }
 
-  /* Target all stats.js elements */
+  /* Target all dat.gui elements */
   div.dg.ac * {
     /* Revert to user agent styles (ignore Tailwind preflight) */
     all: revert;
