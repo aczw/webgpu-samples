@@ -58,6 +58,16 @@ function setRenderer(mode: string) {
       renderer = new ClusteredDeferredRenderer(stage);
       break;
   }
+
+  renderer?.setOnFrame(async function (time, deltaTime) {
+    this.camera.onFrame(deltaTime);
+    this.lights.onFrame(time);
+    this.stats.begin();
+    this.draw();
+    this.stats.end();
+  });
+
+  renderer?.start();
 }
 
 const renderModeController = gui.add(

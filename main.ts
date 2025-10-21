@@ -22,4 +22,14 @@ stats.showPanel(0);
 
 // document.body.appendChild(stats.dom);
 
-new ClusteredDeferredRenderer(new Stage(scene, lights, camera, stats));
+const renderer = new ClusteredDeferredRenderer(new Stage(scene, lights, camera, stats));
+
+renderer.setOnFrame(async function (time, deltaTime) {
+  this.camera.onFrame(deltaTime);
+  this.lights.onFrame(time);
+  // this.stats.begin();
+  this.draw();
+  // this.stats.end();
+});
+
+renderer.start();
