@@ -37,6 +37,10 @@ class CameraUniforms {
   }
 }
 
+type CameraConstructorOptions = {
+  enableFlight: boolean;
+};
+
 export class Camera {
   uniforms: CameraUniforms = new CameraUniforms();
   uniformsBuffer: GPUBuffer;
@@ -56,7 +60,7 @@ export class Camera {
 
   keys: { [key: string]: boolean } = {};
 
-  constructor(enableFlight: boolean) {
+  constructor({ enableFlight }: CameraConstructorOptions) {
     this.uniformsBuffer = device.createBuffer({
       label: "Camera uniforms buffer",
       size: this.uniforms.buffer.byteLength,

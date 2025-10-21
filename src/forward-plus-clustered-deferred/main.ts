@@ -17,8 +17,8 @@ setupLoaders();
 let scene = new Scene();
 await scene.loadGltf("/scenes/sponza/Sponza.gltf");
 
-const camera = new Camera(true);
-const lights = new Lights(camera, 500);
+const camera = new Camera({ enableFlight: true });
+const lights = new Lights({ camera, numLights: 1000 });
 
 const stats = new Stats();
 stats.showPanel(0);
@@ -37,9 +37,9 @@ gui
 const stage = new Stage(scene, lights, camera, stats);
 
 const renderModes = {
-  naive: "naive",
-  forwardPlus: "forward+",
-  clusteredDeferred: "clustered deferred",
+  Naive: "naive",
+  "Forward+": "forward-plus",
+  "Clustered Deferred": "clustered-deferred",
 };
 
 let renderer: Renderer | undefined;
@@ -48,19 +48,23 @@ function setRenderer(mode: string) {
   renderer?.stop();
 
   switch (mode) {
-    case renderModes.naive:
+    case renderModes["Naive"]:
       renderer = new NaiveRenderer(stage);
       break;
-    case renderModes.forwardPlus:
+    case renderModes["Forward+"]:
       renderer = new ForwardPlusRenderer(stage);
       break;
-    case renderModes.clusteredDeferred:
+    case renderModes["Clustered Deferred"]:
       renderer = new ClusteredDeferredRenderer(stage);
       break;
   }
 }
 
-const renderModeController = gui.add({ mode: renderModes.clusteredDeferred }, "mode", renderModes);
+const renderModeController = gui.add(
+  { mode: renderModes["Clustered Deferred"] },
+  "mode",
+  renderModes,
+);
 renderModeController.onChange(setRenderer);
 
 setRenderer(renderModeController.getValue());

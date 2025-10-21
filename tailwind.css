@@ -7,4 +7,10 @@
     margin: 0;
     height: 100%;
   }
+
+  /* Target all stats.js elements */
+  div.dg.ac * {
+    /* Revert to user agent styles (ignore Tailwind preflight) */
+    all: revert;
+  }
 }

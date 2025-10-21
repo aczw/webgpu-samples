@@ -10,6 +10,11 @@ function hueToRgb(h: number) {
   return vec3.lerp(vec3.create(1, 1, 1), vec3.create(f(5), f(3), f(1)), 0.8);
 }
 
+type LightsConstructorOptions = {
+  camera: Camera;
+  numLights: number;
+};
+
 export class Lights {
   private camera: Camera;
 
@@ -41,9 +46,9 @@ export class Lights {
 
   clusterSetStorageBuffer: GPUBuffer;
 
-  constructor(camera: Camera, defaultNumLights: number) {
+  constructor({ camera, numLights }: LightsConstructorOptions) {
     this.camera = camera;
-    this.numLights = defaultNumLights;
+    this.numLights = numLights;
 
     this.lightSetStorageBuffer = device.createBuffer({
       label: "Light set storage buffer",
@@ -120,7 +125,7 @@ export class Lights {
 
     device.queue.writeBuffer(this.numSlicesUniformBuffer, 0, this.numSlicesArray);
     console.log(
-      `[Clustering] Number of slices: X ${numSlicesX} / Y ${numSlicesY} / Z ${numSlicesZ}`
+      `[Clustering] Number of slices: X ${numSlicesX} / Y ${numSlicesY} / Z ${numSlicesZ}`,
     );
 
     // Calculate number of workgroups needed to compute all clusters
@@ -130,7 +135,7 @@ export class Lights {
     const numWorkgroupsZ = Math.ceil(numSlicesZ / z);
     this.numWorkgroupsArray = new Uint32Array([numWorkgroupsX, numWorkgroupsY, numWorkgroupsZ]);
     console.log(
-      `[Clustering] Dispatch workgroups size: X ${numWorkgroupsX} / Y ${numWorkgroupsY} / Z ${numWorkgroupsZ}`
+      `[Clustering] Dispatch workgroups size: X ${numWorkgroupsX} / Y ${numWorkgroupsY} / Z ${numWorkgroupsZ}`,
     );
 
     this.dimensionsUniformBuffer = device.createBuffer({
@@ -141,7 +146,7 @@ export class Lights {
     device.queue.writeBuffer(
       this.dimensionsUniformBuffer,
       0,
-      new Uint32Array([canvas.width, canvas.height])
+      new Uint32Array([canvas.width, canvas.height]),
     );
     console.log(`Dimensions: width ${canvas.width} / height ${canvas.height}`);
 
@@ -240,7 +245,7 @@ export class Lights {
     pass.dispatchWorkgroups(
       this.numWorkgroupsArray[0],
       this.numWorkgroupsArray[1],
-      this.numWorkgroupsArray[2]
+      this.numWorkgroupsArray[2],
     );
 
     pass.end();
