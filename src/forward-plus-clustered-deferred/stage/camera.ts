@@ -56,7 +56,7 @@ export class Camera {
 
   keys: { [key: string]: boolean } = {};
 
-  constructor() {
+  constructor(enableFlight: boolean) {
     this.uniformsBuffer = device.createBuffer({
       label: "Camera uniforms buffer",
       size: this.uniforms.buffer.byteLength,
@@ -67,7 +67,7 @@ export class Camera {
       toRadians(fovYDegrees),
       aspectRatio,
       Camera.nearPlane,
-      Camera.farPlane
+      Camera.farPlane,
     );
 
     this.uniforms.inverseProjection = mat4.inverse(this.projMat);
@@ -76,13 +76,17 @@ export class Camera {
 
     this.rotateCamera(0, 0); // set initial camera vectors
 
-    window.addEventListener("keydown", (event) => this.onKeyEvent(event, true));
-    window.addEventListener("keyup", (event) => this.onKeyEvent(event, false));
-    window.onblur = () => (this.keys = {}); // reset keys on page exit so they don't get stuck (e.g. on alt + tab)
+    if (enableFlight) {
+      console.log("[Info] Camera flight enabled");
 
-    canvas.addEventListener("mousedown", () => canvas.requestPointerLock());
-    canvas.addEventListener("mouseup", () => document.exitPointerLock());
-    canvas.addEventListener("mousemove", (event) => this.onMouseMove(event));
+      window.addEventListener("keydown", (event) => this.onKeyEvent(event, true));
+      window.addEventListener("keyup", (event) => this.onKeyEvent(event, false));
+      window.onblur = () => (this.keys = {}); // reset keys on page exit so they don't get stuck (e.g. on alt + tab)
+
+      canvas.addEventListener("mousedown", () => canvas.requestPointerLock());
+      canvas.addEventListener("mouseup", () => document.exitPointerLock());
+      canvas.addEventListener("mousemove", (event) => this.onMouseMove(event));
+    }
   }
 
   private onKeyEvent(event: KeyboardEvent, down: boolean) {

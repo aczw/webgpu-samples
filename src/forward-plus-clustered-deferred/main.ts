@@ -17,7 +17,7 @@ setupLoaders();
 let scene = new Scene();
 await scene.loadGltf("/scenes/sponza/Sponza.gltf");
 
-const camera = new Camera();
+const camera = new Camera(true);
 const lights = new Lights(camera, 500);
 
 const stats = new Stats();

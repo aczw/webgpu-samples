@@ -14,7 +14,7 @@ setupLoaders();
 const scene = new Scene();
 await scene.loadGltf("/scenes/sponza/Sponza.gltf");
 
-const camera = new Camera();
+const camera = new Camera(false);
 const lights = new Lights(camera, 700);
 
 const stats = new Stats();
@@ -22,5 +22,4 @@ stats.showPanel(0);
 
 // document.body.appendChild(stats.dom);
 
-const stage = new Stage(scene, lights, camera, stats);
-new ClusteredDeferredRenderer(stage);
+new ClusteredDeferredRenderer(new Stage(scene, lights, camera, stats));
