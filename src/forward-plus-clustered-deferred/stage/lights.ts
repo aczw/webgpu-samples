@@ -148,7 +148,7 @@ export class Lights {
       0,
       new Uint32Array([canvas.width, canvas.height]),
     );
-    console.log(`Dimensions: width ${canvas.width} / height ${canvas.height}`);
+    console.log(`[Info] Dimensions: width ${canvas.width} / height ${canvas.height}`);
 
     const totalNumClusters = numSlicesX * numSlicesY * numSlicesZ;
     this.clusterSetStorageBuffer = device.createBuffer({

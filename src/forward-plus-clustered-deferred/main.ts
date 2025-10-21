@@ -56,7 +56,7 @@ function setRenderer(mode: string) {
       renderer = new ForwardPlusRenderer(stage);
       break;
     case renderModes["Clustered Deferred"]:
-      renderer = new ClusteredDeferredRenderer(stage);
+      renderer = new ClusteredDeferredRenderer({ stage });
       break;
   }
 

@@ -14,8 +14,16 @@ import {
   clusteredDeferredFullscreenFragSrc,
   clusteredDeferredFragSrc,
   clusteredDeferredFullscreenVertSrc,
+  clusteredDeferredFullscreenNumLightsFragSrc,
 } from "../shaders/shaders";
 import { Stage } from "../stage/stage";
+
+type ClusteredDeferredRendererConstructorOptions = {
+  stage: Stage;
+  debug?: {
+    numLights: boolean;
+  };
+};
 
 export class ClusteredDeferredRenderer extends Renderer {
   positionTexture: GPUTexture;
@@ -35,7 +43,7 @@ export class ClusteredDeferredRenderer extends Renderer {
   renderBg: GPUBindGroup;
   renderPipeline: GPURenderPipeline;
 
-  constructor(stage: Stage) {
+  constructor({ stage, debug }: ClusteredDeferredRendererConstructorOptions) {
     super(stage);
 
     this.positionTexture = device.createTexture({
@@ -187,6 +195,10 @@ export class ClusteredDeferredRenderer extends Renderer {
       ],
     });
 
+    const fullscreenFragSrc = debug?.numLights
+      ? clusteredDeferredFullscreenNumLightsFragSrc
+      : clusteredDeferredFullscreenFragSrc;
+
     this.renderPipeline = device.createRenderPipeline({
       label: "Deferred render pipeline",
       layout: device.createPipelineLayout({
@@ -202,7 +214,7 @@ export class ClusteredDeferredRenderer extends Renderer {
       fragment: {
         module: device.createShaderModule({
           label: "Deferred render fullscreen fragment shader",
-          code: clusteredDeferredFullscreenFragSrc,
+          code: fullscreenFragSrc,
         }),
         targets: [
           {
@@ -263,7 +275,7 @@ export class ClusteredDeferredRenderer extends Renderer {
           gBufferPass.setVertexBuffer(0, primitive.vertexBuffer);
           gBufferPass.setIndexBuffer(primitive.indexBuffer, "uint32");
           gBufferPass.drawIndexed(primitive.numIndices);
-        }
+        },
       );
 
       gBufferPass.end();

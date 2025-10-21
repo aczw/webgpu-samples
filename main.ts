@@ -16,14 +16,17 @@ const scene = new Scene();
 await scene.loadGltf("/scenes/sponza/Sponza.gltf");
 
 const camera = new Camera({ enableFlight: false, position: vec3.create(0, 2, 0) });
-const lights = new Lights({ camera, numLights: 700 });
+const lights = new Lights({ camera, numLights: 500 });
 
 const stats = new Stats();
 stats.showPanel(0);
 
 // document.body.appendChild(stats.dom);
 
-const renderer = new ClusteredDeferredRenderer(new Stage(scene, lights, camera, stats));
+const renderer = new ClusteredDeferredRenderer({
+  stage: new Stage(scene, lights, camera, stats),
+  debug: { numLights: true },
+});
 
 renderer.setOnFrame(async function (time, deltaTime) {
   this.camera.rotateCamera(deltaTime / 50, 0);
