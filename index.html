@@ -27,11 +27,11 @@
       <script type="module" src="./main.ts"></script>
 
       <div class="absolute inset-0 flex flex-col items-center justify-center">
-        <div class="mx-auto grid grid-cols-[2rem_1fr] gap-2 p-4 text-black">
+        <div class="mx-auto grid grid-cols-[2rem_1fr] gap-x-2 p-4 text-black">
           <a
             href="https://charleszw.com"
             target="_blank"
-            title="Charles Wang"
+            title="Main website"
             class="block self-end transition-colors hover:text-[#312d65]"
           >
             <svg
@@ -52,17 +52,40 @@
 
           <h1 class="self-end text-4xl font-bold">WebGPU projects</h1>
 
-          <ul class="col-start-2 max-w-[75ch] self-start">
-            <li class="[&_a]:font-mono">
-              <a href="/clustered-rendering" class="underline underline-offset-2">
-                /clustered-rendering
-              </a>
-              <p>
-                Implements clustered shading of dynamic lights in a forward rendering (also called
-                Forward+) and a deferred rendering pipeline.
-              </p>
-            </li>
-          </ul>
+          <div class="col-start-2 max-w-[75ch] space-y-8 self-start sm:space-y-4">
+            <p>
+              Here lives my collection of WebGPU experiments and implementations of graphics stuff.
+            </p>
+
+            <ul>
+              <li class="[&_a]:underline [&_a]:underline-offset-2">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:gap-1.5">
+                  <a href="/clustered-rendering" class="w-fit bg-black font-mono text-white">
+                    /clustered-rendering
+                  </a>
+                  <span aria-hidden="true" class="hidden sm:inline">•</span>
+
+                  <div class="flex items-center gap-1.5">
+                    <a href="https://charleszw.com/projects/webgpu-clustered" target="_blank">
+                      Project write-up
+                    </a>
+                    <span aria-hidden="true">•</span>
+                    <a
+                      href="https://github.com/aczw/webgpu-samples/tree/main/src/clustered-rendering"
+                      target="_blank"
+                    >
+                      Source code
+                    </a>
+                  </div>
+                </div>
+
+                <p>
+                  Implements clustered shading of dynamic lights in a forward rendering (also called
+                  Forward+) and deferred rendering pipeline.
+                </p>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </main>
