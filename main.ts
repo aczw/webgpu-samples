@@ -1,13 +1,13 @@
 import Stats from "stats.js";
 import { vec3 } from "wgpu-matrix";
 
-import { initWebGPU } from "@fpcd/renderer";
-import { ClusteredDeferredRenderer } from "@fpcd/renderers/clustered-deferred";
+import { initWebGPU } from "@clustered/renderer";
+import { ClusteredDeferredRenderer } from "@clustered/renderers/clustered-deferred";
 
-import { Scene } from "@fpcd/stage/scene";
-import { Lights } from "@fpcd/stage/lights";
-import { Camera } from "@fpcd/stage/camera";
-import { Stage } from "@fpcd/stage/stage";
+import { Scene } from "@clustered/stage/scene";
+import { Lights } from "@clustered/stage/lights";
+import { Camera } from "@clustered/stage/camera";
+import { Stage } from "@clustered/stage/stage";
 
 await initWebGPU();
 

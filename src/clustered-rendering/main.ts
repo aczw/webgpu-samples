@@ -39,7 +39,7 @@ const stage = new Stage(scene, lights, camera, stats);
 const renderModes = {
   Naive: "naive",
   "Forward+": "forward-plus",
-  "Clustered Deferred": "clustered-deferred",
+  Deferred: "deferred",
 };
 
 let renderer: Renderer | undefined;
@@ -54,7 +54,7 @@ function setRenderer(mode: string) {
     case renderModes["Forward+"]:
       renderer = new ForwardPlusRenderer(stage);
       break;
-    case renderModes["Clustered Deferred"]:
+    case renderModes["Deferred"]:
       renderer = new ClusteredDeferredRenderer({ stage });
       break;
   }
@@ -70,11 +70,7 @@ function setRenderer(mode: string) {
   renderer?.start();
 }
 
-const renderModeController = gui.add(
-  { mode: renderModes["Clustered Deferred"] },
-  "mode",
-  renderModes,
-);
+const renderModeController = gui.add({ mode: renderModes["Deferred"] }, "mode", renderModes);
 renderModeController.onChange(setRenderer);
 
 setRenderer(renderModeController.getValue());

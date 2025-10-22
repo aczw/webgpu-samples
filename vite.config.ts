@@ -15,10 +15,7 @@ const config = defineConfig({
     rollupOptions: {
       input: {
         root: resolve(__dirname, "index.html"),
-        "forward-plus-clustered-deferred": resolve(
-          __dirname,
-          "forward-plus-clustered-deferred/index.html"
-        ),
+        "clustered-rendering": resolve(__dirname, "clustered-rendering/index.html"),
       },
     },
   },
@@ -26,7 +23,7 @@ const config = defineConfig({
     // Matches "paths" setting in tsconfig.json
     alias: {
       "@": resolve(__dirname, "./src"),
-      "@fpcd": resolve(__dirname, "./src/forward-plus-clustered-deferred"),
+      "@clustered": resolve(__dirname, "./src/clustered-rendering"),
     },
   },
   plugins: [tailwindcss()],

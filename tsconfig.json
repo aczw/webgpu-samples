@@ -25,7 +25,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@fpcd/*": ["./src/forward-plus-clustered-deferred/*"]
+      "@clustered/*": ["./src/clustered-rendering/*"]
     }
   },
   "include": ["src", "main.ts"]
