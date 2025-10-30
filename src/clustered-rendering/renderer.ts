@@ -115,7 +115,6 @@ export abstract class Renderer {
   protected scene: Scene;
   protected lights: Lights;
   protected camera: Camera;
-  protected stats: Stats;
 
   private onFrame: OnFrameFn;
   private prevTime: number;
@@ -125,7 +124,6 @@ export abstract class Renderer {
     this.scene = stage.scene;
     this.lights = stage.lights;
     this.camera = stage.camera;
-    this.stats = stage.stats;
 
     this.onFrame = async () => {};
     this.prevTime = 0;

@@ -1,6 +1,6 @@
-import Stats from "stats.js";
-import { GUI } from "dat.gui";
 import { vec3 } from "wgpu-matrix";
+import { Pane } from "tweakpane";
+import * as TweakpaneEssentialsPlugin from "@tweakpane/plugin-essentials";
 
 import { initWebGPU, Renderer } from "./renderer";
 import { NaiveRenderer } from "./renderers/naive";
@@ -14,47 +14,53 @@ import { Stage } from "./stage/stage";
 
 await initWebGPU();
 
-let scene = new Scene();
+const scene = new Scene();
 await scene.loadGltf("/scenes/sponza/Sponza.gltf");
 
 const camera = new Camera({ enableFlight: true, position: vec3.create(-7, 2, 0) });
 const lights = new Lights({ camera, numLights: 1000 });
-
-const stats = new Stats();
-stats.showPanel(0);
-document.body.appendChild(stats.dom);
-
-const gui = new GUI();
-gui
-  .add(lights, "numLights")
-  .min(1)
-  .max(Lights.maxNumLights)
-  .step(1)
-  .onChange(() => {
-    lights.updateLightSetUniformNumLights();
-  });
-
-const stage = new Stage(scene, lights, camera, stats);
-
-const renderModes = {
-  Naive: "naive",
-  "Forward+": "forward-plus",
-  Deferred: "deferred",
-};
+const stage = new Stage(scene, lights, camera);
 
 let renderer: Renderer | undefined;
+
+const pane = new Pane({ title: "WebGPU Clustered Rendering" });
+pane.registerPlugin(TweakpaneEssentialsPlugin);
+
+const fpsGraph = pane.addBlade({
+  label: "FPS",
+  view: "fpsgraph",
+  interval: 100,
+  min: 0,
+  rows: 2,
+}) as TweakpaneEssentialsPlugin.FpsGraphBladeApi;
+
+fpsGraph.on("tick", (ev) => {
+  if (ev.target.fps && ev.target.fps > ev.target.max) {
+    ev.target.max = ev.target.fps;
+  }
+});
+
+pane
+  .addBinding(lights, "numLights", { label: "Light count", min: 1, max: 5000, step: 1 })
+  .on("change", () => lights.updateLightSetUniformNumLights());
+
+const modes = {
+  Naive: "naive",
+  "Forward+": "forward",
+  Deferred: "deferred",
+};
 
 function setRenderer(mode: string) {
   renderer?.stop();
 
   switch (mode) {
-    case renderModes["Naive"]:
+    case modes["Naive"]:
       renderer = new NaiveRenderer(stage);
       break;
-    case renderModes["Forward+"]:
+    case modes["Forward+"]:
       renderer = new ForwardPlusRenderer(stage);
       break;
-    case renderModes["Deferred"]:
+    case modes["Deferred"]:
       renderer = new ClusteredDeferredRenderer({ stage });
       break;
   }
@@ -62,15 +68,22 @@ function setRenderer(mode: string) {
   renderer?.setOnFrame(async function (time, deltaTime) {
     this.camera.onFrame(deltaTime);
     this.lights.onFrame(time);
-    this.stats.begin();
+
+    fpsGraph.begin();
     this.draw();
-    this.stats.end();
+    fpsGraph.end();
   });
 
   renderer?.start();
 }
 
-const renderModeController = gui.add({ mode: renderModes["Deferred"] }, "mode", renderModes);
-renderModeController.onChange(setRenderer);
+const params = { mode: modes["Deferred"] };
 
-setRenderer(renderModeController.getValue());
+pane
+  .addBinding(params, "mode", {
+    label: "Mode",
+    options: modes,
+  })
+  .on("change", (ev) => setRenderer(ev.value));
+
+setRenderer(params.mode);

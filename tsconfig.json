@@ -28,5 +28,5 @@
       "@clustered/*": ["./src/clustered-rendering/*"]
     }
   },
-  "include": ["src", "main.ts"]
+  "include": ["src/**/*.ts", "main.ts"]
 }

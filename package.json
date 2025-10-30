@@ -8,9 +8,8 @@
     "build": "vite build && cp -r scenes/ dist/"
   },
   "devDependencies": {
-    "@types/dat.gui": "^0.7.13",
+    "@tweakpane/core": "^2.0.5",
     "@types/node": "^24.9.2",
-    "@types/stats.js": "^0.17.3",
     "@webgpu/types": "^0.1.44",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.7.1",
@@ -21,9 +20,9 @@
     "@loaders.gl/gltf": "^4.2.2",
     "@loaders.gl/images": "^4.2.3",
     "@tailwindcss/vite": "^4.1.16",
-    "dat.gui": "^0.7.9",
-    "stats.js": "^0.17.0",
+    "@tweakpane/plugin-essentials": "^0.2.1",
     "tailwindcss": "^4.1.16",
+    "tweakpane": "^4.0.5",
     "wgpu-matrix": "^3.0.2"
   }
 }
